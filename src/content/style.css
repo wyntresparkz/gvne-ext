@@ -1,0 +1,427 @@
+/* Gemini Visual Novel Engine - Styles */
+
+/* Main Stage */
+#vn-stage {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(180deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+    background-size: cover;
+    background-position: center;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    padding-bottom: 25px;
+    box-sizing: border-box;
+}
+
+/* Overlay */
+#vn-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 10080;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#vn-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Backlog */
+#vn-backlog-container {
+    width: 70%;
+    height: 80%;
+    background: rgba(0, 0, 0, 0.9);
+    border: 2px solid #4e4e91;
+    border-radius: 15px;
+    padding: 40px;
+    display: none;
+    flex-direction: column;
+    gap: 20px;
+    z-index: 10085;
+}
+
+#vn-backlog-container.visible {
+    display: flex;
+}
+
+#vn-backlog-list {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    font-family: 'Segoe UI', sans-serif;
+    color: #fff;
+}
+
+.backlog-entry {
+    font-size: 1.2rem;
+    border-bottom: 1px solid rgba(78, 78, 145, 0.3);
+    padding-bottom: 10px;
+}
+
+.backlog-speaker {
+    color: #0f0;
+    font-weight: bold;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+#vn-backlog-close {
+    align-self: center;
+    background: #4e4e91;
+    color: #fff;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Segoe UI', sans-serif;
+    transition: 0.3s;
+}
+
+#vn-backlog-close:hover {
+    background: #0f0;
+    color: #000;
+}
+
+/* Sprite Container */
+#vn-sprite-container {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    pointer-events: none;
+    z-index: 10002;
+    overflow: hidden;
+    padding-right: 15%;
+}
+
+.vn-sprite {
+    max-height: 100%;
+    transition: opacity 0.5s ease;
+    opacity: 0;
+    transform-origin: bottom center;
+}
+
+.vn-sprite.active {
+    opacity: 1;
+}
+
+/* Settings Menu */
+#vn-settings-trigger {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    cursor: pointer;
+    z-index: 10100;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: #fff;
+    font-family: 'Segoe UI', sans-serif;
+    pointer-events: auto;
+}
+
+#vn-settings-icon {
+    font-size: 2.5rem;
+    transition: transform 0.4s ease;
+}
+
+#vn-settings-trigger:hover #vn-settings-icon {
+    transform: rotate(90deg);
+    color: #0f0;
+}
+
+#vn-settings-label {
+    font-size: 1.5rem;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: 0.3s;
+    font-weight: bold;
+    pointer-events: none;
+}
+
+#vn-settings-trigger.open #vn-settings-label {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+#vn-settings-menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 350px;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.95) 0%, rgba(48, 43, 99, 0.8) 100%);
+    z-index: 10090;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+    padding: 80px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-right: 2px solid #4e4e91;
+    pointer-events: auto;
+}
+
+#vn-settings-menu.open {
+    transform: translateX(0);
+}
+
+.vn-menu-item {
+    color: #fff;
+    font-size: 1.2rem;
+    font-family: 'Segoe UI', sans-serif;
+    padding: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+    opacity: 0;
+    transform: translateX(-20px);
+}
+
+#vn-settings-menu.open .vn-menu-item {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.vn-menu-item:hover {
+    color: #0f0;
+    background: rgba(255, 255, 255, 0.1);
+    padding-left: 20px;
+}
+
+.vn-menu-item.toggle-active {
+    color: #0f0;
+    font-weight: bold;
+}
+
+/* Quick Skip */
+#vn-quick-skip {
+    position: absolute;
+    bottom: 10px;
+    left: 35px;
+    font-size: 0.8rem;
+    color: #555;
+    font-family: 'Segoe UI', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+    z-index: 10015;
+    pointer-events: auto;
+    letter-spacing: 1px;
+}
+
+#vn-quick-skip.active {
+    color: #0f0;
+    text-shadow: 0 0 8px #0f0;
+}
+
+/* Dev Controls */
+.vn-dev-control {
+    margin-top: 12px;
+    padding: 0 12px;
+    font-family: 'Segoe UI', sans-serif;
+    color: #0f0;
+    font-size: 0.9rem;
+    transition: 0.3s;
+    opacity: 0;
+    transform: translateX(-20px);
+}
+
+.vn-control-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.vn-dev-control input {
+    width: 100%;
+    cursor: pointer;
+    accent-color: #0f0;
+}
+
+/* Dialogue Container */
+#vn-dialogue-container {
+    position: relative;
+    width: 80%;
+    height: 220px;
+    transition: margin-bottom 0.4s ease;
+    z-index: 10010;
+}
+
+#vn-dialogue-box {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    border: 3px solid #4e4e91;
+    border-radius: 15px;
+    padding: 35px;
+    color: #fff;
+    font-size: 1.9rem;
+    pointer-events: auto;
+    overflow: hidden;
+    font-family: 'Segoe UI', sans-serif;
+    line-height: 1.6;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+#vn-namebox {
+    position: absolute;
+    top: -42px;
+    left: 30px;
+    background: rgba(0, 0, 0, 0.9);
+    color: #fff;
+    padding: 5px 25px;
+    border: 3px solid #4e4e91;
+    border-bottom: none;
+    border-radius: 12px 12px 0 0;
+    font-size: 1.5rem;
+    width: fit-content;
+    min-width: 120px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: 0.3s;
+    z-index: 10005;
+}
+
+#vn-namebox.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+#vn-dialogue-container.input-active {
+    margin-bottom: 70px;
+}
+
+/* Input Container */
+#vn-input-container {
+    width: 80%;
+    position: absolute;
+    bottom: 25px;
+    display: flex;
+    gap: 10px;
+    opacity: 0;
+    transition: 0.4s;
+    pointer-events: none;
+    z-index: 10020;
+}
+
+#vn-input-container.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#vn-input {
+    flex: 1;
+    background: #000;
+    border: 2px solid #0f0;
+    color: #0f0;
+    padding: 12px;
+    font-family: 'Courier New', monospace;
+    outline: none;
+    border-radius: 5px;
+    box-shadow: 0 0 10px #0f0;
+    font-size: 1.3rem;
+}
+
+#vn-upload-btn {
+    background: #000;
+    border: 2px solid #0f0;
+    color: #0f0;
+    padding: 12px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 1.3rem;
+}
+
+/* Indicators */
+#vn-next-indicator,
+#vn-user-prompt {
+    position: absolute;
+    bottom: 15px;
+    right: 25px;
+    display: none;
+}
+
+#vn-next-indicator {
+    font-size: 1.5rem;
+    color: #4e4e91;
+    animation: pulse-soft 2s infinite;
+}
+
+#vn-user-prompt {
+    font-size: 1.1rem;
+    color: #ff69b4;
+    animation: pulse-soft 3s infinite;
+    font-weight: bold;
+}
+
+.show-indicator {
+    display: block !important;
+}
+
+/* Utility Classes */
+.vn-hidden {
+    display: none !important;
+}
+
+.google-ui-nuked {
+    display: none !important;
+}
+
+/* Fullscreen Button */
+#vn-fullscreen-btn {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 10101;
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid #0f0;
+    color: #0f0;
+    padding: 10px;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    cursor: pointer;
+    backdrop-filter: blur(5px);
+}
+
+/* Animations */
+@keyframes pulse-soft {
+    0% {
+        opacity: 0.2;
+    }
+    50% {
+        opacity: 0.7;
+    }
+    100% {
+        opacity: 0.2;
+    }
+}
