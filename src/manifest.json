@@ -1,7 +1,7 @@
 {
     "name": "Gemini Visual Novel Engine",
     "description": "Transform Google Gemini into an immersive Visual Novel experience",
-    "version": "0.1.0",
+    "version": "0.1.0.0",
     "icons": {
         "16": "assets/icon16.png",
         "48": "assets/icon48.png",

@@ -1,6 +1,6 @@
 {
   "name": "gvne-ext",
-  "version": "0.1.0",
+  "version": "0.1.0.0",
   "description": "Gemini Visual Novel Engine - Cross-browser extension for Firefox and Chrome",
   "type": "module",
   "scripts": {
@@ -13,7 +13,12 @@
     "type": "git",
     "url": "git+https://github.com/wyntresparkz/gvne-ext.git"
   },
-  "keywords": ["visual-novel", "gemini", "browser-extension", "webextension"],
+  "keywords": [
+    "visual-novel",
+    "gemini",
+    "browser-extension",
+    "webextension"
+  ],
   "author": "wyntresparkz",
   "license": "CC-BY-NC-SA-4.0",
   "bugs": {
