@@ -30,32 +30,87 @@ npm install
 ```
 
 ### Build Commands
+
+**Primary Platform: Firefox**
 ```bash
-# Build both Chrome and Firefox versions
+# Build Firefox only (Manifest V2)
+npm run build:firefox
+
+# Build both Firefox and Chrome
 npm run build
 
 # Build Chrome only (Manifest V3)
 npm run build:chrome
+```
 
-# Build Firefox only (Manifest V2)
-npm run build:firefox
+### Packaging (Distribution)
 
-# Development mode (watch for changes)
+Create distributable `.xpi` (Firefox) and `.zip` (Chrome) files:
+
+```bash
+# Package both browsers
+npm run package
+
+# Package Firefox only
+npm run package:firefox
+
+# Package Chrome only  
+npm run package:chrome
+```
+
+Output: `packages/gvne-firefox-v0.1.0.0.xpi` and `packages/gvne-chrome-v0.1.0.0.zip`
+
+### Development Mode
+
+Watch for changes and rebuild automatically:
+
+```bash
+# Watch Firefox build (default)
 npm run dev
+
+# Watch Firefox build (explicit)
+npm run dev:firefox
+
+# Watch Chrome build
+npm run dev:chrome
+```
+
+### Testing with web-ext
+
+Firefox-specific testing tools:
+
+```bash
+# Run Firefox with extension loaded
+npm run start:firefox
+
+# Lint Firefox extension
+npm run lint:firefox
 ```
 
 ## Loading the Extension
 
-### Chrome/Edge
-1. Navigate to `chrome://extensions/`
+### Firefox (Primary - Recommended)
+**Option 1: Load .xpi package**
+1. Run `npm run package:firefox`
+2. Navigate to `about:addons`
+3. Click gear icon → "Install Add-on From File"
+4. Select `packages/gvne-firefox-v0.1.0.0.xpi`
+
+**Option 2: Load unpacked (development)**
+1. Navigate to `about:debugging#/runtime/this-firefox`
+2. Click "Load Temporary Add-on"
+3. Select `manifest.json` in `dist/firefox`
+
+**Option 3: Use web-ext**
+```bash
+npm run start:firefox
+```
+
+### Chrome/Edge (Secondary)
+1. Navigate to `chrome://extensions/` (or `edge://extensions/`)
 2. Enable "Developer mode" (top right)
 3. Click "Load unpacked"
 4. Select the `dist/chrome` folder
-
-### Firefox
-1. Navigate to `about:debugging#/runtime/this-firefox`
-2. Click "Load Temporary Add-on"
-3. Select the `manifest.json` file in `dist/firefox`
 
 ## Testing
 

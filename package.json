@@ -4,10 +4,17 @@
   "description": "Gemini Visual Novel Engine - Cross-browser extension for Firefox and Chrome",
   "type": "module",
   "scripts": {
-    "dev": "vite build --watch --mode development",
-    "build": "npm run build:chrome && npm run build:firefox",
+    "dev": "npm run dev:firefox",
+    "dev:firefox": "vite build --watch --mode development --config vite.firefox.config.js",
+    "dev:chrome": "vite build --watch --mode development --config vite.chrome.config.js",
+    "build": "npm run build:firefox && npm run build:chrome",
+    "build:firefox": "vite build --config vite.firefox.config.js",
     "build:chrome": "vite build --config vite.chrome.config.js",
-    "build:firefox": "vite build --config vite.firefox.config.js"
+    "package": "npm run build && node scripts/package.js",
+    "package:firefox": "npm run build:firefox && node scripts/package.js",
+    "package:chrome": "npm run build:chrome && node scripts/package.js",
+    "start:firefox": "web-ext run --source-dir=dist/firefox",
+    "lint:firefox": "web-ext lint --source-dir=dist/firefox"
   },
   "repository": {
     "type": "git",
@@ -26,7 +33,9 @@
   },
   "homepage": "https://github.com/wyntresparkz/gvne-ext#readme",
   "devDependencies": {
+    "archiver": "^7.0.1",
     "vite": "^7.3.1",
+    "web-ext": "^9.2.0",
     "webextension-polyfill": "^0.12.0"
   }
 }

@@ -2,10 +2,12 @@
 
 ![Version](https://img.shields.io/badge/version-0.1.0.0-blue)
 ![License](https://img.shields.io/badge/license-CC--BY--NC--SA--4.0-green)
-![Platform](https://img.shields.io/badge/platform-Cross--Browser-orange)
+![Platform](https://img.shields.io/badge/platform-Firefox_Primary-orange)
 ![Status](https://img.shields.io/badge/status-IN_DEVELOPMENT-yellow)
 
-> **Note**: This project is currently in active development. We are adapting the legacy userscript into a fully modular, cross-compatible browser extension for Firefox and Chrome.
+> **Note**: This project is currently in active development. We are adapting the legacy userscript into a fully modular, cross-compatible browser extension.
+> 
+> **Primary Platform**: Firefox (Manifest V2) | **Secondary**: Chrome/Edge (Manifest V3)
 
 > A Visual Novel interface overlay for Google Gemini, transformed into a powerful browser extension.
 
@@ -37,7 +39,27 @@ This extension builds upon the legacy userscript to provide better performance, 
 
 ## 🚀 Installation
 
-*Installation instructions will be available once the first alpha release is published.*
+### Download Pre-built Packages
+
+Download the latest release from the [Releases](https://github.com/wyntresparkz/gvne-ext/releases) page:
+- **Firefox**: `gvne-firefox-v0.1.0.0.xpi`
+- **Chrome/Edge**: `gvne-chrome-v0.1.0.0.zip`
+
+### Install
+
+#### Firefox (Primary Platform)
+1. Download `gvne-firefox-v0.1.0.0.xpi`
+2. Open Firefox and navigate to `about:addons`
+3. Click the gear icon → "Install Add-on From File"
+4. Select the downloaded `.xpi` file
+
+#### Chrome/Edge (Secondary Platform)
+1. Download and extract `gvne-chrome-v0.1.0.0.zip`
+2. Navigate to `chrome://extensions/` (or `edge://extensions/`)
+3. Enable "Developer mode"
+4. Click "Load unpacked" → select the extracted folder
+
+*Installation instructions will be updated once the first alpha release is published.*
 
 ---
 
