@@ -114,6 +114,15 @@ export class UIManager {
                 };
             }
 
+            if (text === 'Load') {
+                item.onclick = (e) => {
+                    e.stopPropagation();
+                    if (this.callbacks.onOpenLoadDialog) {
+                        this.callbacks.onOpenLoadDialog();
+                    }
+                };
+            }
+
             if (text.startsWith('Skip')) {
                 item.onclick = (e) => {
                     e.stopPropagation();

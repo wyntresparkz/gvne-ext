@@ -5,6 +5,8 @@
 
 import { Parser } from './parser.js';
 import { UIManager } from './ui.js';
+import { HistoryManager } from './history.js';
+import { LoadDialog } from './load-dialog.js';
 import browser from '../utils/browser.js';
 
 export class VNEngine {
@@ -33,10 +35,17 @@ export class VNEngine {
 
         // Initialize modules
         this.parser = new Parser(this.handleMessageUpdate.bind(this));
+        this.historyManager = new HistoryManager();
+        this.loadDialog = new LoadDialog(
+            this.historyManager,
+            (chat) => this.handleLoadChat(chat)
+        );
+
         this.ui = new UIManager({
             onAdvance: this.advance.bind(this),
             onToggleSkip: this.toggleSkip.bind(this),
             onToggleVnMode: this.toggleVnMode.bind(this),
+            onOpenLoadDialog: () => this.loadDialog.open(),
             isVnMode: () => this.isVnMode,
             getMessageHistory: () => this.messageHistory,
         });
@@ -248,5 +257,13 @@ export class VNEngine {
         } catch (error) {
             console.error(`Failed to load sprite for ${speakerKey}:`, error);
         }
+    }
+
+    /**
+     * Handle chat loading from load dialog
+     */
+    handleLoadChat(chat) {
+        console.log('[GVNE] Loading chat:', chat.title);
+        this.historyManager.loadChat(chat.url);
     }
 }
