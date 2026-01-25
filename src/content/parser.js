@@ -8,6 +8,7 @@ export class Parser {
         this.onMessageUpdate = onMessageUpdate;
         this.observer = null;
         this.lastProcessedElement = null;
+        this.currentCodeBlocks = [];
     }
 
     /**
@@ -40,6 +41,12 @@ export class Parser {
      * Process a message container and extract clean text
      */
     processMessage(container) {
+        // 1. Collect code blocks first (for save data)
+        this.currentCodeBlocks = [];
+        container.querySelectorAll('code-block').forEach(block => {
+            this.currentCodeBlocks.push(block.innerText);
+        });
+
         const paragraphs = [];
 
         // Extract text from paragraphs, removing citations and code blocks

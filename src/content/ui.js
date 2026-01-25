@@ -23,6 +23,7 @@ export class UIManager {
         this.createDialogueBox();
         this.createInputContainer();
         this.createFullscreenButton();
+        this.createDebugButton();
         this.attachEventListeners();
     }
 
@@ -32,6 +33,8 @@ export class UIManager {
     createStage() {
         const stage = document.createElement('div');
         stage.id = 'vn-stage';
+        // Regression Fix: Ensure stage doesn't block clicks on underlying page (splash screen)
+        stage.style.pointerEvents = 'none';
         document.body.appendChild(stage);
         this.elements.stage = stage;
     }
@@ -106,6 +109,13 @@ export class UIManager {
             item.className = 'vn-menu-item';
             item.textContent = text;
             item.style.transitionDelay = `${0.1 + i * 0.07}s`;
+
+            if (text === 'Save') {
+                item.onclick = (e) => {
+                    e.stopPropagation();
+                    this.callbacks.onSaveGame();
+                };
+            }
 
             if (text === 'History') {
                 item.onclick = (e) => {
@@ -276,6 +286,48 @@ export class UIManager {
         });
     }
 
+
+    /**
+     * Create debug button
+     */
+    createDebugButton() {
+        const debugBtn = document.createElement('div');
+        debugBtn.id = 'vn-debug-btn';
+        debugBtn.textContent = '🐞';
+        debugBtn.className = 'vn-debug-btn';
+
+        // Style it inline to ensure visibility
+        Object.assign(debugBtn.style, {
+            position: 'fixed',
+            bottom: '60px',
+            right: '15px',
+            zIndex: '10101',
+            background: 'rgba(0,0,0,0.6)',
+            border: '2px solid #ff00ff',
+            color: '#ff00ff',
+            padding: '10px',
+            borderRadius: '50%',
+            width: '35px',
+            height: '35px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '1.2rem',
+            cursor: 'pointer',
+            backdropFilter: 'blur(5px)',
+            pointerEvents: 'auto' // Important!
+        });
+
+        document.body.appendChild(debugBtn);
+        this.elements.debugBtn = debugBtn;
+
+        debugBtn.onmousedown = () => {
+            const state = this.callbacks.getDebugState();
+            const info = `Speakers: ${JSON.stringify(state.speakers)}\nLocations: ${JSON.stringify(state.locations)}`;
+            alert(info);
+        };
+    }
+
     /**
      * Create fullscreen button for mobile
      */
@@ -283,6 +335,8 @@ export class UIManager {
         const fsBtn = document.createElement('div');
         fsBtn.id = 'vn-fullscreen-btn';
         fsBtn.textContent = '⛶';
+        // Ensure it has pointer-events: auto since stage is none
+        fsBtn.style.pointerEvents = 'auto';
         document.body.appendChild(fsBtn);
 
         this.elements.fullscreenBtn = fsBtn;
@@ -413,6 +467,107 @@ export class UIManager {
 
         this.elements.backlogContainer.classList.add('visible');
         this.elements.overlay.classList.add('active');
+    }
+
+    /**
+     * Automate chat renaming/saving
+     */
+    async automateSave(saveName) {
+        console.log('[GVNE] Automating save...');
+        const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+        // 1. Open Header Menu
+        const menuBtn = document.querySelector('button.conversation-actions-menu-button');
+        if (!menuBtn) {
+            console.error('[GVNE] Header menu button not found');
+            return;
+        }
+        menuBtn.click();
+        await wait(600);
+
+        // 2. Check for Pin/Unpin
+        const menuItems = document.querySelectorAll('button.mat-mdc-menu-item');
+        const pinBtn = Array.from(menuItems).find(el => el.textContent.includes('Pin'));
+        const unpinBtn = Array.from(menuItems).find(el => el.textContent.includes('Unpin'));
+
+        if (pinBtn) {
+            // --- PIN FLOW (Rename inside Pin Dialog) ---
+            console.log('[GVNE] Pinning and Renaming...');
+            pinBtn.click();
+            await wait(1000); // Wait for Pin Dialog
+
+            // Find Input in Dialog
+            const input = document.querySelector('mat-dialog-container input');
+            if (input) {
+                console.log('[GVNE] Setting name in Pin dialog...');
+                input.focus();
+                input.value = '';
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+                await wait(100);
+
+                input.value = saveName;
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+                input.dispatchEvent(new Event('change', { bubbles: true }));
+                await wait(500); // Validation wait
+            } else {
+                console.warn('[GVNE] Input not found in Pin dialog, proceeding with default name');
+            }
+
+            // Confirm "Pin"
+            const dialogButtons = document.querySelectorAll('.mat-mdc-dialog-actions button');
+            const confirmBtn = Array.from(dialogButtons).find(btn =>
+                btn.textContent.trim().toLowerCase() === 'pin'
+            );
+
+            if (confirmBtn) {
+                confirmBtn.click();
+                console.log('[GVNE] Pin/Save complete');
+            } else {
+                console.error('[GVNE] Pin confirm button not found');
+            }
+
+        } else if (unpinBtn) {
+            // --- RENAME FLOW (Already Pinned) ---
+            console.log('[GVNE] Chat already pinned, switching to Rename...');
+
+            // Rename button should be in the currently open menu
+            // Re-query to be safe
+            const currentMenuItems = document.querySelectorAll('button.mat-mdc-menu-item');
+            const renameBtn = Array.from(currentMenuItems).find(el => el.textContent.includes('Rename'));
+
+            if (renameBtn) {
+                renameBtn.click();
+                await wait(1000);
+
+                const input = document.querySelector('mat-dialog-container input');
+                if (input) {
+                    input.focus();
+                    input.value = '';
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                    await wait(100);
+
+                    input.value = saveName;
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                    await wait(500);
+
+                    const actions = document.querySelectorAll('.mat-mdc-dialog-actions button');
+                    const confirm = Array.from(actions).find(el => el.textContent.includes('Rename'));
+                    if (confirm) {
+                        confirm.click();
+                        console.log('[GVNE] Rename/Save complete');
+                    } else {
+                        console.error('[GVNE] Rename confirm button not found');
+                    }
+                } else {
+                    console.error('[GVNE] Rename input not found');
+                }
+            } else {
+                console.error('[GVNE] Rename button not found');
+            }
+        } else {
+            console.warn('[GVNE] Neither Pin nor Unpin found');
+        }
     }
 
     /**

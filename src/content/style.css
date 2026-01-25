@@ -264,7 +264,7 @@
 /* Dialogue Container */
 #vn-dialogue-container {
     position: relative;
-    width: 80%;
+    width: 97%;
     height: 220px;
     transition: margin-bottom 0.4s ease;
     z-index: 10010;
@@ -318,7 +318,7 @@
 
 /* Input Container */
 #vn-input-container {
-    width: 80%;
+    width: 97%;
     position: absolute;
     bottom: 25px;
     display: flex;
@@ -418,9 +418,11 @@
     0% {
         opacity: 0.2;
     }
+
     50% {
         opacity: 0.7;
     }
+
     100% {
         opacity: 0.2;
     }

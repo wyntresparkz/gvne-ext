@@ -1,6 +1,6 @@
 {
   "name": "gvne-ext",
-  "version": "0.1.0.0",
+  "version": "0.1.0.1",
   "description": "Gemini Visual Novel Engine - Cross-browser extension for Firefox and Chrome",
   "type": "module",
   "scripts": {

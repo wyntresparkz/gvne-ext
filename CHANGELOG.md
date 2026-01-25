@@ -29,6 +29,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.1.0.1] - 2026-01-25
+
+### Fixed
+- **Save Functionality**: Implemented robust "Pin-to-Rename" workflow to fix save automation failures.
+- **Splash Screen Regression**: Fixed issue where the VN stage blocked clicks on the underlying Gemini intro page.
+- **Versioning**: Updated versioning scheme to `ProductionRelease.Major.Minor.Patch` for Primary builds.
+
+### Added
+- **Debug UI**: Added debug button (🐞) to visualize detected speakers and locations in real-time.
+
+---
+
 ## [0.1.0.0] - 2026-01-18
 
 ### Added

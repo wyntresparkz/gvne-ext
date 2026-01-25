@@ -22,6 +22,10 @@ export class VNEngine {
         this.currentCleanText = '';
         this.typewriterStartTime = null;
 
+        // Metadata State (for Save & Debug)
+        this.detectedSpeakers = new Set();
+        this.detectedLocations = new Set();
+
         // Constants
         this.CHARS_PER_SECOND = 40;
 
@@ -46,9 +50,87 @@ export class VNEngine {
             onToggleSkip: this.toggleSkip.bind(this),
             onToggleVnMode: this.toggleVnMode.bind(this),
             onOpenLoadDialog: () => this.loadDialog.open(),
+            onSaveGame: this.handleSaveGame.bind(this),
             isVnMode: () => this.isVnMode,
             getMessageHistory: () => this.messageHistory,
+            getDebugState: () => ({
+                speakers: Array.from(this.detectedSpeakers),
+                locations: Array.from(this.detectedLocations)
+            }),
         });
+    }
+
+    /**
+     * Scan current text (code blocks + pages) for metadata tags
+     */
+    scanForMetadata() {
+        // Combine code blocks and visible pages for scanning
+        const sourceTexts = [...this.parser.currentCodeBlocks, ...this.currentPages];
+
+        // Regex patterns
+        // [Name Tag] :
+        const speakerRegex = /\[(.*?)\]\s*:/g;
+        // [{Location}]
+        const locationRegex = /\[\s*\{(.*?)\}\s*\]/g;
+
+        // We don't clear sets here because we want to accumulate over the turn, 
+        // OR should we clear them per update? 
+        // Usually per turn is safer, but `handleMessageUpdate` runs multiple times per turn.
+        // Let's clear and re-scan current content to avoid stale partials.
+        this.detectedSpeakers.clear();
+        this.detectedLocations.clear();
+
+        sourceTexts.forEach(text => {
+            // Check for speakers (global search)
+            let speakerMatch;
+            while ((speakerMatch = speakerRegex.exec(text)) !== null) {
+                this.detectedSpeakers.add(speakerMatch[1].trim());
+            }
+
+            // Check for locations (global search)
+            let locationMatch;
+            while ((locationMatch = locationRegex.exec(text)) !== null) {
+                this.detectedLocations.add(locationMatch[1].trim());
+            }
+        });
+    }
+
+    /**
+     * Handle save game request
+     */
+    handleSaveGame() {
+        // 1. Refresh metadata scan to be sure
+        this.scanForMetadata();
+
+        // 2. Format Persona string (Person1&Person2)
+        const speakerList = Array.from(this.detectedSpeakers);
+        let personaStr = '[Unknown]';
+
+        if (speakerList.length > 0) {
+            // Join generic speakers with '&'
+            personaStr = speakerList.map(s => `[${s}]`).join('&');
+        } else if (this.ui.elements.nameBox.textContent) {
+            // Fallback to currently active speaker in UI if no tag found
+            personaStr = `[${this.ui.elements.nameBox.textContent}]`;
+        }
+
+        // 3. Format Location string (Last found location or Unknown)
+        let locationStr = '[Unknown]';
+        if (this.detectedLocations.size > 0) {
+            // Convert Set to Array and take the last one added
+            const locArray = Array.from(this.detectedLocations);
+            locationStr = `[${locArray[locArray.length - 1]}]`;
+        }
+
+        // 4. Generate Timestamp
+        const timestamp = new Date().toLocaleString('en-US', {
+            month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+
+        // 5. Construct Save String
+        // Format: [SAVE] | [Persona1]&[Persona2] | [Location] | ${timestamp}
+        const saveString = `[SAVE] | ${personaStr} | ${locationStr} | ${timestamp}`;
+        this.ui.automateSave(saveString);
     }
 
     /**
@@ -58,9 +140,36 @@ export class VNEngine {
         this.ui.init();
         this.parser.init();
 
+        // Initialize persistent history
+        await this.historyManager.init();
+
         // Load background and sprites
         await this.loadBackground();
         await this.loadSprite('coder bunny');
+
+        // Listen for settings updates
+        browser.runtime.onMessage.addListener((message) => {
+            if (message.type === 'SETTINGS_UPDATED') {
+                this.handleSettingsUpdate(message.settings);
+            }
+        });
+    }
+
+    /**
+     * Handle settings updates
+     */
+    handleSettingsUpdate(settings) {
+        if (settings.vnMode !== undefined) {
+            this.isVnMode = settings.vnMode;
+            this.ui.toggleVisibility(this.isVnMode);
+        }
+        if (settings.skipMode !== undefined) {
+            this.isSkipActive = settings.skipMode;
+            this.ui.updateSkipButton(this.isSkipActive);
+        }
+        if (settings.textSpeed !== undefined) {
+            this.CHARS_PER_SECOND = settings.textSpeed;
+        }
     }
 
     /**
@@ -93,6 +202,9 @@ export class VNEngine {
         }
 
         this.currentPages = newPages;
+
+        // Update metadata for debug/save
+        this.scanForMetadata();
 
         // Start typing if not already started
         if (!this.hasStartedTypingThisTurn && !this.isTyping) {

@@ -89,17 +89,18 @@ export class LoadDialog {
      */
     populateList(chats = null) {
         const chatList = this.elements.chatList;
-        chatList.innerHTML = '';
+        chatList.textContent = '';
 
-        const history = chats || this.historyManager.getSortedHistory();
+        let history = chats || this.historyManager.getSortedHistory();
+
+        // Filter for Saved Games
+        history = history.filter(chat => chat.title.startsWith('[SAVE]'));
 
         if (history.length === 0) {
-            const emptyMsg = document.createElement('div');
-            emptyMsg.className = 'vn-empty-message';
-            emptyMsg.textContent = this.currentFilter
-                ? 'No chats found matching your search.'
-                : 'No chat history found. Start a conversation first!';
-            chatList.appendChild(emptyMsg);
+            const empty = document.createElement('div');
+            empty.className = 'vn-load-empty';
+            empty.textContent = 'No saved games found.';
+            chatList.appendChild(empty);
             return;
         }
 

@@ -3,12 +3,13 @@
 ## Current Version: **0.1.0.0**
 
 ## Versioning Scheme
-
 This project uses a **4-part semantic versioning** system during pre-release:
 
 ```
-0.MAJOR.MINOR.PATCH
+ProductionRelease.MAJOR.MINOR.PATCH
 ```
+
+*Note: Canary builds use `Major.Minor.Patch.Hotfix`.*
 
 ### Version Components
 
