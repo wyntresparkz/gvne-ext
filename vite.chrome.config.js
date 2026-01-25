@@ -38,6 +38,16 @@ export default mergeConfig(
                         resolve(__dirname, 'src/content/style.css'),
                         resolve(__dirname, 'dist/chrome/content.css')
                     );
+
+                    // Copy Assets
+                    const assetsDir = resolve(__dirname, 'assets');
+                    if (fs.existsSync(assetsDir)) {
+                        fs.cpSync(
+                            assetsDir,
+                            resolve(__dirname, 'dist/chrome/assets'),
+                            { recursive: true }
+                        );
+                    }
                 },
             },
         ],

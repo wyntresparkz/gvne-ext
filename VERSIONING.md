@@ -5,11 +5,10 @@
 ## Versioning Scheme
 This project uses a **4-part semantic versioning** system during pre-release:
 
+
 ```
 ProductionRelease.MAJOR.MINOR.PATCH
 ```
-
-*Note: Canary builds use `Major.Minor.Patch.Hotfix`.*
 
 ### Version Components
 
