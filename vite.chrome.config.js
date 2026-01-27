@@ -24,8 +24,17 @@ export default mergeConfig(
                         fs.readFileSync(resolve(__dirname, 'src/manifest.chrome.json'), 'utf-8')
                     );
 
-                    // Merge manifests
-                    const finalManifest = { ...baseManifest, ...chromeManifest };
+                    // Read package.json for version syncing
+                    const pkg = JSON.parse(
+                        fs.readFileSync(resolve(__dirname, 'package.json'), 'utf-8')
+                    );
+
+                    // Merge manifests and override version
+                    const finalManifest = {
+                        ...baseManifest,
+                        ...chromeManifest,
+                        version: pkg.version
+                    };
 
                     // Write to dist
                     fs.writeFileSync(
@@ -40,13 +49,28 @@ export default mergeConfig(
                     );
 
                     // Copy Assets
-                    const assetsDir = resolve(__dirname, 'assets');
-                    if (fs.existsSync(assetsDir)) {
+                    if (fs.existsSync(resolve(__dirname, 'src/assets'))) {
                         fs.cpSync(
-                            assetsDir,
+                            resolve(__dirname, 'src/assets'),
                             resolve(__dirname, 'dist/chrome/assets'),
                             { recursive: true }
                         );
+                    }
+
+                    // Move and cleanup Popup HTML
+                    // Check if it exists at src/popup/index.html (Vite output structure)
+                    const srcPopupPath = resolve(__dirname, 'dist/chrome/src/popup/index.html');
+                    if (fs.existsSync(srcPopupPath)) {
+                        // Move to root as popup.html
+                        fs.renameSync(srcPopupPath, resolve(__dirname, 'dist/chrome/popup.html'));
+
+                        // Cleanup empty directories (dist/chrome/src/popup and dist/chrome/src)
+                        try {
+                            fs.rmdirSync(resolve(__dirname, 'dist/chrome/src/popup'));
+                            fs.rmdirSync(resolve(__dirname, 'dist/chrome/src'));
+                        } catch (e) {
+                            // Ignore cleanup errors
+                        }
                     }
                 },
             },

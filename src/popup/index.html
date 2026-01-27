@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GVNE Settings</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">
+        <h1>GVNE Settings</h1>
+        <span class="version" id="version-display">v1.0.0.0</span>
+    </div>
+
+    <div class="content">
+        <!-- Main Toggles -->
+        <div class="section">
+            <div class="setting-item">
+                <label for="vn-mode-toggle">Enable VN Mode</label>
+                <label class="switch">
+                    <input type="checkbox" id="vn-mode-toggle" checked>
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <label for="skip-mode-toggle">Skip Mode (Fast Forward)</label>
+                <label class="switch">
+                    <input type="checkbox" id="skip-mode-toggle">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- Text Speed -->
+        <div class="section">
+            <label>Text Speed (chars/sec): <span id="speed-value">40</span></label>
+            <input type="range" id="text-speed" min="10" max="100" value="40" class="range-slider">
+        </div>
+
+        <hr>
+
+        <!-- Actions -->
+        <div class="section actions">
+            <button id="reset-settings" class="btn secondary">Reset Defaults</button>
+            <button id="open-github" class="btn primary">GitHub</button>
+        </div>
+    </div>
+
+    <script type="module" src="popup.js"></script>
+</body>
+</html>

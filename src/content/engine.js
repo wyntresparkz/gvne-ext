@@ -6,12 +6,12 @@
 import { Parser } from './parser.js';
 import { UIManager } from './ui.js';
 import { HistoryManager } from './history.js';
-import { LoadDialog } from './load-dialog.js';
+import { LoadScreen } from './load_screen.js'; // Updated import
 import browser from '../utils/browser.js';
 
 export class VNEngine {
     constructor() {
-        // State
+        // ... (state setup remains same)
         this.isVnMode = true;
         this.isSkipActive = false;
         this.messageHistory = [];
@@ -40,7 +40,9 @@ export class VNEngine {
         // Initialize modules
         this.parser = new Parser(this.handleMessageUpdate.bind(this));
         this.historyManager = new HistoryManager();
-        this.loadDialog = new LoadDialog(
+
+        // Replaced LoadDialog with LoadScreen
+        this.loadScreen = new LoadScreen(
             this.historyManager,
             (chat) => this.handleLoadChat(chat)
         );
@@ -49,7 +51,7 @@ export class VNEngine {
             onAdvance: this.advance.bind(this),
             onToggleSkip: this.toggleSkip.bind(this),
             onToggleVnMode: this.toggleVnMode.bind(this),
-            onOpenLoadDialog: () => this.loadDialog.open(),
+            onOpenLoadDialog: () => this.loadScreen.show(), // Updated method call
             onSaveGame: this.handleSaveGame.bind(this),
             isVnMode: () => this.isVnMode,
             getMessageHistory: () => this.messageHistory,
@@ -96,9 +98,30 @@ export class VNEngine {
     }
 
     /**
+     * Clear the buffer and reset engine state
+     * Preparing for a new chat load
+     */
+    clearBuffer() {
+        console.log('[GVNE] Clearing engine buffer');
+        this.isTyping = false;
+        this.currentPages = [];
+        this.currentPageIndex = 0;
+        this.currentCleanText = '';
+
+        // Clear UI elements
+        this.ui.updateText('');
+        this.ui.updateNamebox(null);
+        this.ui.updateSprite(null);
+        this.ui.showNextIndicator(false);
+        this.ui.showUserPrompt(false);
+    }
+
+    /**
      * Handle save game request
      */
     handleSaveGame() {
+        this.ui.showNotification('Saving game...', 'info', 1500);
+
         // 1. Refresh metadata scan to be sure
         this.scanForMetadata();
 
@@ -131,6 +154,11 @@ export class VNEngine {
         // Format: [SAVE] | [Persona1]&[Persona2] | [Location] | ${timestamp}
         const saveString = `[SAVE] | ${personaStr} | ${locationStr} | ${timestamp}`;
         this.ui.automateSave(saveString);
+
+        // Short delay to assume success (since automateSave is async-ish)
+        setTimeout(() => {
+            this.ui.showNotification('Game Saved', 'success');
+        }, 1000);
     }
 
     /**
@@ -208,6 +236,11 @@ export class VNEngine {
 
         // Start typing if not already started
         if (!this.hasStartedTypingThisTurn && !this.isTyping) {
+            // SYNC FIX: Don't start typing if Loading Screen is active
+            if (window.LoadingScreen && window.LoadingScreen.isActive) {
+                console.log('[GVNE] Typewriter deferred (Loading Screen Active)');
+                return;
+            }
             this.startTypewriter(this.currentPages[this.currentPageIndex]);
         } else if (this.isTyping && this.currentPageIndex === this.currentPages.length - 1) {
             // Update current page if we're typing the last page
@@ -374,8 +407,45 @@ export class VNEngine {
     /**
      * Handle chat loading from load dialog
      */
-    handleLoadChat(chat) {
-        console.log('[GVNE] Loading chat:', chat.title);
-        this.historyManager.loadChat(chat.url);
+    async handleLoadChat(chat) {
+        console.log('[GVNE] Checks checks chat:', chat.title);
+
+        // 0. Sanity Check: Prevent reloading current chat
+        // We check if chat is marked active by scraper OR if URL matches current location
+        const currentUrl = window.location.href;
+        if (chat.isActive || currentUrl.includes(chat.url)) {
+            console.log('[GVNE] Ignored load request: Already in this chat');
+            this.ui.showNotification('You are already in this story', 'warning');
+            this.ui.closeSettingsMenu();
+            return;
+        }
+
+        // 0. Ensure Menu is Closed
+        this.ui.closeSettingsMenu();
+
+        // 1. Show Loading Screen
+        if (window.LoadingScreen) {
+            await window.LoadingScreen.show();
+        }
+
+        // 2. Clear Buffer
+        this.clearBuffer();
+
+        // 3. Navigate
+        await this.historyManager.loadChat(chat.url);
+
+        // 4. Hide Loading Screen (waits for min duration)
+        if (window.LoadingScreen) {
+            await window.LoadingScreen.hide();
+
+            // SYNC FIX: Resume typewriter if content is waiting
+            if (this.currentPages.length > 0 && !this.hasStartedTypingThisTurn) {
+                console.log('[GVNE] Resuming typewriter after load');
+                // Small delay to ensure smooth transition
+                setTimeout(() => {
+                    this.startTypewriter(this.currentPages[this.currentPageIndex]);
+                }, 100);
+            }
+        }
     }
 }

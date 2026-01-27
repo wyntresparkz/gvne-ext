@@ -109,14 +109,36 @@ export class HistoryManager {
     /**
      * Navigate to a specific chat
      */
-    loadChat(chatUrl) {
+    async loadChat(chatUrl) {
         if (!chatUrl) return;
 
-        // Use full URL if it's a relative path
-        if (chatUrl.startsWith('/')) {
-            window.location.href = window.location.origin + chatUrl;
+        // Try to find the link in the DOM first (SPA navigation)
+        // Gemini uses relative paths in hrefs usually
+        const selector = `a[href*="${chatUrl}"]`;
+        const link = document.querySelector(selector);
+
+        if (link) {
+            console.log('[GVNE] Found chat link in DOM, mimicking click for SPA nav');
+
+            // Robust click: Dispatch mousedown, mouseup, click
+            // Some frameworks require full event sequence
+            const events = ['mousedown', 'mouseup', 'click'];
+            events.forEach(eventType => {
+                link.dispatchEvent(new MouseEvent(eventType, {
+                    bubbles: true,
+                    cancelable: true,
+                    view: window,
+                    buttons: 1
+                }));
+            });
         } else {
-            window.location.href = chatUrl;
+            console.log('[GVNE] Chat link not found in DOM, forcing reload');
+            // Fallback to full reload
+            if (chatUrl.startsWith('/')) {
+                window.location.href = window.location.origin + chatUrl;
+            } else {
+                window.location.href = chatUrl;
+            }
         }
     }
 

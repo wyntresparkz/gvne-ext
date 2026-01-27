@@ -4,6 +4,7 @@
  */
 
 import { VNEngine } from './engine.js';
+import './loading_screen.js';
 
 // Wait for DOM to be ready
 if (document.readyState === 'loading') {

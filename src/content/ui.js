@@ -24,6 +24,7 @@ export class UIManager {
         this.createInputContainer();
         this.createFullscreenButton();
         this.createDebugButton();
+        this.createNotificationArea(); // Added
         this.attachEventListeners();
     }
 
@@ -202,8 +203,13 @@ export class UIManager {
         const diagBox = document.createElement('div');
         diagBox.id = 'vn-dialogue-box';
 
+        // Namebox Wrapper (Clipping Mask)
+        const nameWrapper = document.createElement('div');
+        nameWrapper.id = 'vn-namebox-wrapper';
+
         const nameBox = document.createElement('div');
         nameBox.id = 'vn-namebox';
+        nameWrapper.appendChild(nameBox);
 
         const quickSkip = document.createElement('div');
         quickSkip.id = 'vn-quick-skip';
@@ -222,11 +228,13 @@ export class UIManager {
         userPrompt.textContent = '[ Waiting for Input ]';
         diagBox.appendChild(userPrompt);
 
-        diagCont.append(nameBox, diagBox, quickSkip);
+        // Append Wrapper instead of Namebox directly
+        diagCont.append(nameWrapper, diagBox, quickSkip);
         this.elements.stage.appendChild(diagCont);
 
         this.elements.dialogueContainer = diagCont;
         this.elements.dialogueBox = diagBox;
+        this.elements.nameWrapper = nameWrapper; // Store ref
         this.elements.nameBox = nameBox;
         this.elements.quickSkip = quickSkip;
         this.elements.textTarget = textTarget;
@@ -637,5 +645,64 @@ export class UIManager {
         this.elements.userPrompt.classList.toggle('show-indicator', show);
         this.elements.inputContainer.classList.toggle('visible', show);
         this.elements.dialogueContainer.classList.toggle('input-active', show);
+    }
+
+    /**
+     * Close settings menu if open
+     */
+    closeSettingsMenu() {
+        if (this.isMenuOpen) {
+            this.elements.settingsTrigger.click();
+        }
+    }
+
+    /* --- Notification System --- */
+
+    /**
+     * Create notification container
+     */
+    createNotificationArea() {
+        const area = document.createElement('div');
+        area.id = 'vn-notification-area';
+        this.elements.stage.appendChild(area);
+        this.elements.notificationArea = area;
+    }
+
+    /**
+     * Show a toast notification
+     * @param {string}message - Text to display
+     * @param {string} type - 'info', 'success', 'warning', 'error'
+     * @param {number} duration - ms to stay visible
+     */
+    showNotification(message, type = 'info', duration = 2000) {
+        if (!this.elements.notificationArea) {
+            this.createNotificationArea();
+        }
+
+        // Clear previous notifications
+        this.elements.notificationArea.innerHTML = '';
+
+        const toast = document.createElement('div');
+        toast.className = `vn-toast vn-toast-${type}`;
+
+        const text = document.createElement('span');
+        text.className = 'vn-toast-text';
+        text.textContent = message;
+
+        toast.appendChild(text);
+        this.elements.notificationArea.appendChild(toast);
+
+        // Animate in
+        requestAnimationFrame(() => {
+            toast.classList.add('show');
+        });
+
+        // Remove after duration
+        setTimeout(() => {
+            toast.classList.remove('show');
+            toast.addEventListener('transitionend', () => {
+                toast.remove();
+            });
+        }, duration);
     }
 }

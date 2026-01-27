@@ -8,11 +8,13 @@ export default defineConfig({
         rollupOptions: {
             input: {
                 content: resolve(__dirname, 'src/content/index.js'),
+                // popup: resolve(__dirname, 'src/popup/index.html'),
             },
             output: {
                 entryFileNames: '[name].js',
                 chunkFileNames: '[name].js',
                 assetFileNames: '[name].[ext]',
+                format: 'iife',
             },
         },
     },

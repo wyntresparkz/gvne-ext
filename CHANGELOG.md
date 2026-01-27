@@ -29,6 +29,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.0.0] - 2026-01-27
+
+### Added
+- **Enhanced Load Screen**: Visual "Save Cards" with dynamic backgrounds, metadata parsing, pagination, and "Clipping Mask" animation.
+- **Notification System**: Custom "Toast" notifications (Info, Success, Warning, Error) replacing native alerts.
+- **Extension Icons**: Added 16x16, 48x48, and 128x128 icons.
+- **Save/Load Functionality**: Complete implementation using `history.js` and local storage logic.
+
+### Changed
+- **UI Polish**: Fixed Namebar gap/z-index/centering. Moved Load Screen to `load_screen.js`.
+- **Navigation**: Implemented forced history refresh and sanity checks.
+- **Notifications**: Sleek neon glow aesthetics.
+
+### Fixed
+- Fixed SPA navigation issues.
+- Fixed Namebar disconnecting from dialogue box.
+
+---
+
 ## [0.1.0.1] - 2026-01-25
 
 ### Fixed
@@ -37,7 +56,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Versioning**: Updated versioning scheme to `ProductionRelease.Major.Minor.Patch` for Primary builds.
 
 ### Added
-- **Debug UI**: Added debug button (🐞) to visualize detected speakers and locations in real-time.
+- **Loading Screen**: Added a "Now Loading..." screen with animations and specific wait time for SPA navigation.
+- **Debug Button**: Added a dedicated debug button (🐞) to view current speaker/location tags.
+- **Buffer Management**: Optimized buffer clearing during chat switch to prevent ghosting.
 
 ---
 

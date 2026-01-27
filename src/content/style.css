@@ -216,6 +216,74 @@
     font-weight: bold;
 }
 
+/* Notification System */
+#vn-notification-area {
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 20050;
+    /* Above Load Screen */
+    pointer-events: none;
+}
+
+.vn-toast {
+    background: rgba(0, 0, 0, 0.6);
+    /* border-left: 4px solid #fff;  Removed per request */
+    color: #fff;
+    padding: 10px 25px;
+    border-radius: 20px;
+    /* Pill shape */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    font-family: 'Segoe UI', sans-serif;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.4s ease;
+    pointer-events: auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.vn-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.vn-toast-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+    font-style: italic;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.5px;
+}
+
+/* Glow colors based on type */
+.vn-toast-info .vn-toast-text {
+    color: #00d2ff;
+    text-shadow: 0 0 10px rgba(0, 210, 255, 0.6);
+}
+
+.vn-toast-success .vn-toast-text {
+    color: #0f0;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.6);
+}
+
+.vn-toast-warning .vn-toast-text {
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+}
+
+.vn-toast-error .vn-toast-text {
+    color: #ff4444;
+    text-shadow: 0 0 10px rgba(255, 68, 68, 0.6);
+}
+
 /* Quick Skip */
 #vn-quick-skip {
     position: absolute;
@@ -286,12 +354,34 @@
     line-height: 1.6;
     cursor: pointer;
     box-sizing: border-box;
+    z-index: 10010;
+    /* Ensure it is above namebar wrapper (10009) */
+}
+
+#vn-namebox-wrapper {
+    position: absolute;
+    top: -60px;
+    /* Height of the namebox area */
+    left: 30px;
+    width: auto;
+    height: 60px;
+    /* Enough space for the namebox */
+    overflow: hidden;
+    /* THE CLIPPER */
+    z-index: 10009;
+    display: flex;
+    align-items: flex-end;
+    /* Align box to bottom of wrapper */
+    pointer-events: none;
+    /* Let clicks pass through empty space */
 }
 
 #vn-namebox {
-    position: absolute;
-    top: -42px;
-    left: 30px;
+    position: relative;
+    /* Relative to wrapper */
+    top: auto;
+    bottom: 0;
+    left: auto;
     background: rgba(0, 0, 0, 0.9);
     color: #fff;
     padding: 5px 25px;
@@ -301,15 +391,18 @@
     font-size: 1.5rem;
     width: fit-content;
     min-width: 120px;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: 0.3s;
-    z-index: 10005;
+    text-align: center;
+    transform: translateY(100%);
+    /* Start hidden (pushed down) */
+    transition: transform 0.3s ease-out;
+    pointer-events: auto;
 }
 
 #vn-namebox.active {
     opacity: 1;
+    /* Keep opacity 1, rely on transform */
     transform: translateY(0);
+    /* Slide up into view */
 }
 
 #vn-dialogue-container.input-active {
@@ -649,4 +742,277 @@
 
 .vn-dialog-list::-webkit-scrollbar-thumb:hover {
     background: #0f0;
+}
+
+/* Loading Screen */
+#vn-loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    z-index: 20000;
+    display: flex;
+    align-items: flex-end;
+    /* Align to bottom */
+    justify-content: flex-end;
+    /* Align to right */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+    padding: 3vmin;
+    /* Responsive padding */
+    box-sizing: border-box;
+}
+
+#vn-loading-screen.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.vn-loading-content {
+    display: flex;
+    flex-direction: row;
+    /* Spinner Left, Text Right */
+    align-items: center;
+    gap: 2vmin;
+    /* Responsive gap */
+}
+
+.vn-loading-spinner {
+    width: 5vmin;
+    /* Responsive size */
+    height: 5vmin;
+    /* Responsive size */
+    border: 0.5vmin solid rgba(78, 78, 145, 0.3);
+    border-top: 0.5vmin solid #0f0;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.vn-loading-text {
+    font-family: 'Segoe UI', sans-serif;
+    color: #fff;
+    font-size: 3vmin;
+    /* Responsive text size */
+    font-weight: bold;
+    letter-spacing: 0.2vmin;
+    text-transform: uppercase;
+}
+
+.vn-loading-text span {
+    display: inline-block;
+    animation: bounce 1.4s infinite ease-in-out both;
+}
+
+/* Animations */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes bounce {
+
+    0%,
+    80%,
+    100% {
+        transform: scale(0);
+        opacity: 0.5;
+    }
+
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Enhanced Load Screen */
+#vn-load-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 20000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Segoe UI', sans-serif;
+    color: #fff;
+}
+
+#vn-load-screen.active {
+    display: flex;
+}
+
+.vn-load-screen-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.4) blur(5px);
+    z-index: 0;
+}
+
+.vn-load-content {
+    position: relative;
+    z-index: 1;
+    width: 90%;
+    max-width: 1200px;
+    height: 80%;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
+.vn-load-content h1 {
+    font-size: 2rem;
+    margin: 0 0 1.5rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.2rem;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    text-align: center;
+}
+
+.vn-load-cards {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.5rem;
+    overflow: hidden;
+}
+
+.vn-save-card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.vn-save-card:not(.empty):hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+    border-color: #fff;
+    z-index: 10;
+}
+
+.vn-save-card.empty {
+    opacity: 0.1;
+    cursor: default;
+    border-style: dashed;
+}
+
+.vn-card-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 70%;
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.8);
+    transition: filter 0.3s ease;
+}
+
+.vn-save-card:hover .vn-card-bg {
+    filter: brightness(1.0);
+}
+
+.vn-card-sprite {
+    position: absolute;
+    bottom: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 80%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
+    transition: transform 0.3s ease;
+}
+
+.vn-save-card:hover .vn-card-sprite {
+    transform: translateX(-50%) scale(1.05);
+}
+
+.vn-card-info {
+    margin-top: auto;
+    height: 30%;
+    background: #1a1a1a;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+    z-index: 2;
+}
+
+.vn-card-name {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #ffd700;
+    margin-bottom: 0.3rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.vn-card-location,
+.vn-card-date {
+    font-size: 0.8rem;
+    color: #aaa;
+}
+
+/* Pagination */
+.vn-load-pagination {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.vn-load-pagination button {
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    padding: 0.5rem 1.5rem;
+    cursor: pointer;
+    font-family: inherit;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+}
+
+.vn-load-pagination button:hover {
+    background: #fff;
+    color: #000;
+}
+
+.vn-load-close {
+    border-color: #ff4444 !important;
+    color: #ff4444 !important;
+}
+
+.vn-load-close:hover {
+    background: #ff4444 !important;
+    color: #fff !important;
 }
