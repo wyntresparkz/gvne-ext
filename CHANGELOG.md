@@ -29,6 +29,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.1.0] - 2026-01-29
+
+### Added
+- **Transition Logic**: Finalized the "Immediate Fade" transition for the Start Screen "New Game" action.
+- **Animation**: Improved "Drop" animation smoothing (1.2s ease-in-out).
+
+### Fixed
+- **Logic Regression**: Fixed issue where transition videos attempted to play in standard (SFW) mode.
+- **Race Condition**: Added reflow delay to ensure start screen animations play reliably.
+
+---
+
 ## [0.2.0.0] - 2026-01-27
 
 ### Added

@@ -1016,3 +1016,211 @@
     background: #ff4444 !important;
     color: #fff !important;
 }
+
+/* Start Screen */
+#vn-start-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    z-index: 2147483647;
+    /* Max Int */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    justify-content: center;
+    transition: opacity 1s ease, background-image 2.5s ease-in-out;
+}
+
+#vn-start-logo {
+    width: 80%;
+    max-width: 1600px;
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    position: absolute;
+    top: 0%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.menu-active #vn-start-logo {
+    top: -80px;
+    /* Shift up to compensate for 140px image padding */
+    /* Move up slightly but stay centered */
+    width: 60%;
+    /* Shrink slightly */
+    max-width: 1200px;
+    left: 50%;
+    /* Keep centered */
+    transform: translateX(-50%);
+    /* Keep centered */
+}
+
+#vn-press-start {
+    position: absolute;
+    bottom: 15%;
+    font-family: 'Segoe UI', sans-serif;
+    color: #fff;
+    font-size: 2.5rem;
+    font-weight: bold;
+    letter-spacing: 5px;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    animation: pulse-glow 2s infinite;
+    cursor: pointer;
+}
+
+#vn-start-menu {
+    position: absolute;
+    bottom: 15%;
+    /* Bottom mounted */
+    left: 50%;
+    transform: translateX(-50%);
+    /* Center horizontally */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    perspective: 1000px;
+    align-items: center;
+    /* Center buttons */
+    pointer-events: none;
+}
+
+.menu-active #vn-start-menu {
+    pointer-events: auto;
+}
+
+.vn-menu-btn {
+    background: transparent;
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 1.8rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    opacity: 0;
+    transform: translateY(20px);
+    /* Start slightly down */
+    text-align: center;
+    width: auto;
+    backdrop-filter: none;
+    position: relative;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.menu-active .vn-menu-btn {
+    animation: slide-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: var(--delay);
+}
+
+.vn-menu-btn::after {
+    content: '';
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    /* Center underline start */
+    transform: translateX(-50%);
+    width: 0%;
+    height: 3px;
+    background-color: #0f0;
+    transition: width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 0 10px #0f0;
+}
+
+.vn-menu-btn:hover,
+.vn-menu-btn.selected {
+    color: #0f0;
+    transform: translateY(-5px) !important;
+    /* Move up slightly */
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    padding-left: 20px;
+    /* Reset padding override? Actually we want center, no padding shift */
+    padding: 10px 20px;
+}
+
+.vn-menu-btn:hover::after,
+.vn-menu-btn.selected::after {
+    width: 100%;
+}
+
+@keyframes slide-in-up {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse-glow {
+
+    0%,
+    100% {
+        opacity: 1;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    }
+
+
+    50% {
+        opacity: 0.5;
+        text-shadow: 0 0 20px rgba(255, 255, 255, 1);
+    }
+}
+
+/* UI Transition States */
+
+/* FADE OUT LOGO when exiting (Triggered 1s before video end) */
+.logo-fading #vn-start-logo {
+    opacity: 0;
+    transition: opacity 1s ease;
+}
+
+/* When menu is exiting, hide unselected items (Triggered Immediately) */
+.menu-animating .vn-menu-btn:not(.selected) {
+    opacity: 0 !important;
+    transform: translateY(20px);
+    transition: all 0.5s ease;
+}
+
+/* Selected item drops to bottom and continues to flash (Triggered Immediately) */
+.menu-animating .vn-menu-btn.selected {
+    /* DROP ANIMATION (One-time move) */
+    transform: translateY(40vh) !important;
+    transition: transform 1.2s ease-in-out;
+
+    /* FLASH ANIMATION (Looping) */
+    animation: flash-green 0.2s infinite alternate;
+    pointer-events: none;
+    opacity: 1;
+}
+
+@keyframes flash-green {
+    from {
+        color: #fff;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    }
+
+    to {
+        color: #0f0;
+        text-shadow: 0 0 20px #0f0;
+    }
+}
+
+/* Flashing effect is now part of the drop animation or can be kept separate if needed */
+
+#vn-start-menu.locked {
+    pointer-events: none;
+}
+
+#vn-start-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+    /* Behind UI */
+    transition: opacity 1s ease;
+}
