@@ -36,3 +36,11 @@ Thumbs.db
 
 # Canary Builds
 canary/
+
+# Sensitive Assets (NSFW/Copyright)
+src/assets/bgNSFW*
+src/assets/video_newgame.mp4
+src/assets/*.mp4
+src/assets/bgSFWNIGHT.png
+src/assets/bgsfwDAY.png
+src/assets/Continue Screen.png
